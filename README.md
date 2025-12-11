@@ -86,12 +86,21 @@ service cloud.firestore {
 
 ### 4. Crear el Primer Super Usuario
 
-1. Abre la aplicación en tu navegador
-2. Abre la consola de desarrollador (F12)
-3. Ejecuta el siguiente comando (reemplaza con tus datos):
+Para crear el primer Super Usuario de forma segura:
+
+1. Ve a [Firebase Console](https://console.firebase.google.com/project/padelpotatos)
+2. En **Authentication** > **Users**, crea un usuario manualmente
+3. En **Firestore Database**, ve a la colección `userProfiles`
+4. Crea un documento con el UID del usuario y estos datos:
 
 ```javascript
-createFirstSU("admin@torneo.com", "contraseña123", "Administrador Principal");
+{
+  email: "admin@torneo.com",
+  name: "Administrador Principal",
+  role: "su",
+  status: "approved",
+  createdAt: // Timestamp automático
+}
 ```
 
 ## Uso de la Aplicación

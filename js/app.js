@@ -194,4 +194,4 @@ window.showUserStats = async () => {
 };
 
 console.log('Aplicación del Torneo de Pádel inicializada correctamente');
-console.log('Para crear el primer Super Usuario, usa: createFirstSU("email@ejemplo.com", "contraseña", "Nombre Admin")');
+console.log('Los Super Usuarios deben ser creados directamente desde Firebase Console');

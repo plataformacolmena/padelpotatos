@@ -232,41 +232,13 @@ class AdminManager {
         }
     }
 
-    // Crear el primer Super Usuario (solo usar una vez)
-    async createFirstSuperUser(email, password, name) {
-        try {
-            // Crear usuario en Firebase Auth
-            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-            
-            // Crear perfil de Super Usuario
-            const userProfile = {
-                email: email,
-                name: name,
-                role: USER_ROLES.SU,
-                status: USER_STATUS.APPROVED,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
-            
-            await db.collection(COLLECTIONS.USER_PROFILES).doc(userCredential.user.uid).set(userProfile);
-            
-            console.log('Super Usuario creado exitosamente');
-            showNotification('Super Usuario creado exitosamente', 'success');
-            
-        } catch (error) {
-            console.error('Error creando Super Usuario:', error);
-            showNotification('Error al crear Super Usuario', 'error');
-        }
-    }
+
 }
 
 // Instancia global del manager de administración
 const adminManager = new AdminManager();
 
-// Función helper para crear el primer Super Usuario desde la consola del navegador
-window.createFirstSU = async function(email, password, name) {
-    console.log('Creando primer Super Usuario...');
-    await adminManager.createFirstSuperUser(email, password, name);
-};
+
 
 // Escuchar cambios en tiempo real para usuarios pendientes (opcional)
 function startRealtimeListeners() {
