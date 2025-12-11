@@ -32,21 +32,45 @@ class TournamentViewer {
 
     // Cargar todos los partidos
     async loadAllMatches() {
-        const snapshot = await db.collection(COLLECTIONS.MATCHES)
-            .orderBy('date', 'asc')
-            .get();
+        try {
+            const snapshot = await db.collection(COLLECTIONS.MATCHES)
+                .orderBy('date', 'asc')
+                .get();
 
-        this.matches = [];
-        snapshot.forEach(doc => {
-            const matchData = { id: doc.id, ...doc.data() };
-            this.matches.push(matchData);
-        });
+            this.matches = [];
+            snapshot.forEach(doc => {
+                const matchData = { id: doc.id, ...doc.data() };
+                this.matches.push(matchData);
+            });
 
-        // Filtrar partidos del usuario actual
-        const currentUserId = authManager.currentUser?.uid;
-        this.userMatches = this.matches.filter(match => 
-            match.players && match.players.includes(currentUserId)
-        );
+            // Filtrar partidos del usuario actual
+            const currentUserId = authManager.currentUser?.uid;
+            this.userMatches = this.matches.filter(match => 
+                match.players && match.players.includes(currentUserId)
+            );
+        } catch (error) {
+            console.error('Error cargando partidos:', error);
+            
+            // Si es un error de permisos, mostrar mensaje específico
+            if (error.code === 'permission-denied') {
+                console.log('⚠️ SOLUCIÓN: Configura las reglas de Firestore para la colección matches');
+                
+                // Mostrar mensaje de error en las secciones
+                const sections = ['upcomingMatches', 'liveMatches', 'matchHistory'];
+                sections.forEach(sectionId => {
+                    const container = document.getElementById(sectionId);
+                    if (container) {
+                        container.innerHTML = '<div style="text-align: center; padding: 1.5rem; background: #fed7d7; border-radius: 8px;"><h5 style="color: #c53030;">Error de Configuración</h5><p style="color: #742a2a;">Las reglas de Firestore necesitan ser configuradas.</p></div>';
+                    }
+                });
+                
+                // Evitar que se procesen los datos
+                this.matches = [];
+                this.userMatches = [];
+            }
+            
+            throw error;
+        }
     }
 
     // Renderizar partidos en la vista del torneo

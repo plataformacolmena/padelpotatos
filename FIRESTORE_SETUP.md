@@ -12,23 +12,16 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // REGLAS TEMPORALES PARA DESARROLLO INICIAL
-    // Permitir lectura y escritura para usuarios autenticados
-    match /userProfiles/{userId} {
-      allow read, write: if request.auth != null;
-    }
-    
-    match /matches/{matchId} {
-      allow read, write: if request.auth != null;
-    }
-    
-    // Denegar todo lo demás
+    // REGLAS TEMPORALES PARA DESARROLLO
+    // Permitir acceso completo para usuarios autenticados
     match /{document=**} {
-      allow read, write: if false;
+      allow read, write: if request.auth != null;
     }
   }
 }
 ```
+
+**⚠️ IMPORTANTE**: Estas reglas son muy permisivas y solo para desarrollo inicial. Cambiar a reglas productivas más adelante.
 
 ### 3. Después de crear el primer Super Usuario, usa estas reglas PRODUCTIVAS:
 

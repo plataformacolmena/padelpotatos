@@ -180,7 +180,20 @@ class MatchManager {
             await this.renderMatchesList();
         } catch (error) {
             console.error('Error cargando partidos:', error);
-            showNotification('Error al cargar partidos', 'error');
+            
+            // Si es un error de permisos, mostrar mensaje específico
+            if (error.code === 'permission-denied') {
+                showNotification('Configura las reglas de Firestore para la colección matches', 'error');
+                console.log('⚠️ SOLUCIÓN: Ve a Firebase Console > Firestore > Rules y configura permisos para la colección matches');
+                
+                // Mostrar lista vacía con mensaje
+                const container = document.getElementById('matchesList');
+                if (container) {
+                    container.innerHTML = '<div style="text-align: center; padding: 2rem; background: #fed7d7; border-radius: 8px; margin: 1rem 0;"><h4 style="color: #c53030;">Error de Permisos</h4><p>Necesitas configurar las reglas de Firestore. <br>Ve a <strong>Firebase Console > Firestore > Rules</strong></p></div>';
+                }
+            } else {
+                showNotification('Error al cargar partidos', 'error');
+            }
         }
     }
 
