@@ -54,6 +54,9 @@ class TournamentApp {
             case 'torneo':
                 this.handleTournamentTab();
                 break;
+            case 'estadisticas':
+                this.handleStatisticsTab();
+                break;
         }
     }
 
@@ -63,8 +66,9 @@ class TournamentApp {
         if (authManager && authManager.isSuperUser()) {
             adminManager.loadPendingUsers();
             adminManager.loadApprovedUsers();
-            // Cargar partidos en el panel de administración
+            // Cargar partidos y parejas en el panel de administración
             matchManager.loadMatches();
+            pairManager.loadPairs();
         }
     }
 
@@ -99,6 +103,43 @@ class TournamentApp {
                     default:
                         accessDenied.innerHTML = `
                             <p style="color: #e53e3e;">No tienes permisos para acceder al torneo.</p>
+                        `;
+                }
+            }
+        }
+    }
+
+    // Manejar pestaña de estadísticas
+    handleStatisticsTab() {
+        // Cargar estadísticas para miembros aprobados y SU
+        if (authManager && (authManager.isApprovedMember() || authManager.isSuperUser())) {
+            statisticsUI.loadStatistics();
+        } else if (authManager && authManager.userProfile) {
+            // Mostrar mensaje apropiado según el estado
+            const accessDenied = document.getElementById('statisticsAccessDenied');
+            const content = document.getElementById('statisticsContent');
+            
+            if (accessDenied && content) {
+                content.style.display = 'none';
+                accessDenied.style.display = 'block';
+                
+                // Personalizar mensaje según estado
+                switch (authManager.userProfile.status) {
+                    case USER_STATUS.PENDING:
+                        accessDenied.innerHTML = `
+                            <p style="color: #d69e2e;">Tu solicitud está siendo revisada por un administrador.</p>
+                            <p style="color: #718096;">Una vez aprobada, tendrás acceso a las estadísticas del torneo.</p>
+                        `;
+                        break;
+                    case USER_STATUS.DENIED:
+                        accessDenied.innerHTML = `
+                            <p style="color: #e53e3e;">Tu solicitud de acceso ha sido denegada.</p>
+                            <p style="color: #718096;">Contacta al administrador para más información.</p>
+                        `;
+                        break;
+                    default:
+                        accessDenied.innerHTML = `
+                            <p style="color: #e53e3e;">No tienes permisos para ver las estadísticas.</p>
                         `;
                 }
             }

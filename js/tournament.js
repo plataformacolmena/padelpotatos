@@ -45,9 +45,18 @@ class TournamentViewer {
 
             // Filtrar partidos del usuario actual
             const currentUserId = authManager.currentUser?.uid;
-            this.userMatches = this.matches.filter(match => 
-                match.players && match.players.includes(currentUserId)
-            );
+            this.userMatches = [];
+            
+            // Para cada partido, verificar si el usuario está en alguna de las parejas
+            for (const match of this.matches) {
+                if (match.pairs && match.pairs.length > 0) {
+                    // Verificar si el usuario está en alguna pareja del partido
+                    const userIsInMatch = await this.isUserInMatchPairs(currentUserId, match.pairs);
+                    if (userIsInMatch) {
+                        this.userMatches.push(match);
+                    }
+                }
+            }
         } catch (error) {
             console.error('Error cargando partidos:', error);
             
@@ -70,6 +79,27 @@ class TournamentViewer {
             }
             
             throw error;
+        }
+    }
+
+    // Verificar si un usuario está en alguna pareja del partido
+    async isUserInMatchPairs(userId, pairIds) {
+        if (!userId || !pairIds || pairIds.length === 0) return false;
+        
+        try {
+            for (const pairId of pairIds) {
+                const doc = await db.collection(COLLECTIONS.PAIRS).doc(pairId).get();
+                if (doc.exists) {
+                    const pairData = doc.data();
+                    if (pairData.players && pairData.players.includes(userId)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } catch (error) {
+            console.error('Error verificando usuario en parejas:', error);
+            return false;
         }
     }
 
@@ -112,21 +142,21 @@ class TournamentViewer {
             return;
         }
 
-        // Obtener información de jugadores para todos los partidos
-        const matchesWithPlayers = await Promise.all(
+        // Obtener información de parejas para todos los partidos
+        const matchesWithPairs = await Promise.all(
             matches.map(async (match) => ({
                 ...match,
-                playersInfo: await this.getPlayersInfo(match.players || [])
+                pairsInfo: await this.getPairsInfo(match.pairs || [])
             }))
         );
 
-        container.innerHTML = matchesWithPlayers.map(match => this.renderMatchCard(match, containerId === 'matchHistory')).join('');
+        container.innerHTML = matchesWithPairs.map(match => this.renderMatchCard(match, containerId === 'matchHistory')).join('');
     }
 
     // Renderizar tarjeta individual de partido
     renderMatchCard(match, isHistory = false) {
         const date = match.date?.toDate ? match.date.toDate() : new Date(match.date);
-        const isUserMatch = match.players && match.players.includes(authManager.currentUser?.uid);
+        const isUserMatch = this.isUserInMatchCard(match);
         
         return `
             <div class="match-card ${isUserMatch ? 'user-match' : ''}">
@@ -141,30 +171,37 @@ class TournamentViewer {
                     <div class="match-details">
                         <p><strong>📅 Fecha:</strong> ${this.formatDate(date)}</p>
                         <p><strong>⏰ Hora:</strong> ${this.formatTime(date)}</p>
-                        <p><strong>👥 Jugadores:</strong> ${match.playersInfo.length}/${match.maxPlayers}</p>
+                        <p><strong>👥 Parejas:</strong> ${match.pairsInfo.length}/${match.maxPairs || 2}</p>
                         ${match.description ? `<p><strong>📝 Descripción:</strong> ${match.description}</p>` : ''}
                         ${isHistory && match.result ? `<p><strong>🏆 Resultado:</strong> ${match.result}</p>` : ''}
                     </div>
                 </div>
                 
-                ${match.playersInfo.length > 0 ? `
+                ${match.pairsInfo.length > 0 ? `
                     <div class="match-players">
-                        <h5>Jugadores:</h5>
-                        <div class="players-list">
-                            ${match.playersInfo.map(player => `
-                                <span class="player-tag ${player.id === authManager.currentUser?.uid ? 'current-user' : ''}">
-                                    ${player.name || 'Sin nombre'}
-                                </span>
+                        <h5>Parejas:</h5>
+                        <div class="pairs-list">
+                            ${match.pairsInfo.map(pair => `
+                                <div class="pair-tag ${this.isUserInPair(pair) ? 'user-pair' : ''}">
+                                    <strong>${pair.name}</strong>
+                                    <div class="pair-players">
+                                        ${pair.playersInfo.map(player => `
+                                            <span class="player-tag ${player.id === authManager.currentUser?.uid ? 'current-user' : ''}">
+                                                ${player.name || 'Sin nombre'}
+                                            </span>
+                                        `).join(' + ')}
+                                    </div>
+                                </div>
                             `).join('')}
                         </div>
                     </div>
                 ` : ''}
                 
-                ${!isHistory && match.status === MATCH_STATUS.SCHEDULED && !isUserMatch && match.playersInfo.length < match.maxPlayers ? `
+                ${!isHistory && match.status === MATCH_STATUS.SCHEDULED && !isUserMatch && match.pairsInfo.length < (match.maxPairs || 2) ? `
                     <div class="match-actions">
-                        <button class="btn btn-primary btn-small" onclick="tournamentViewer.joinMatch('${match.id}')">
-                            Unirse al Partido
-                        </button>
+                        <p style="color: #718096; font-size: 0.9rem; text-align: center; margin: 1rem 0;">
+                            Para unirse necesitas tener una pareja activa. Contacta al administrador.
+                        </p>
                     </div>
                 ` : ''}
                 
@@ -179,8 +216,44 @@ class TournamentViewer {
         `;
     }
 
-    // Obtener información de jugadores
-    async getPlayersInfo(playerIds) {
+    // Verificar si el usuario actual está en el partido
+    isUserInMatchCard(match) {
+        if (!match.pairsInfo || !authManager.currentUser) return false;
+        
+        return match.pairsInfo.some(pair => this.isUserInPair(pair));
+    }
+
+    // Verificar si el usuario está en una pareja específica
+    isUserInPair(pair) {
+        if (!pair.playersInfo || !authManager.currentUser) return false;
+        
+        return pair.playersInfo.some(player => player.id === authManager.currentUser.uid);
+    }
+
+    // Obtener información de parejas
+    async getPairsInfo(pairIds) {
+        if (!pairIds || pairIds.length === 0) return [];
+
+        try {
+            const pairs = [];
+            for (const pairId of pairIds) {
+                const doc = await db.collection(COLLECTIONS.PAIRS).doc(pairId).get();
+                if (doc.exists) {
+                    const pairData = { id: doc.id, ...doc.data() };
+                    // Obtener información de jugadores de la pareja
+                    pairData.playersInfo = await this.getPlayersInfoForPair(pairData.players || []);
+                    pairs.push(pairData);
+                }
+            }
+            return pairs;
+        } catch (error) {
+            console.error('Error obteniendo información de parejas:', error);
+            return [];
+        }
+    }
+
+    // Obtener información de jugadores para una pareja
+    async getPlayersInfoForPair(playerIds) {
         if (!playerIds || playerIds.length === 0) return [];
 
         try {

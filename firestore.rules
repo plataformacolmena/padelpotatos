@@ -30,6 +30,30 @@ service cloud.firestore {
                     get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'su';
     }
     
+    // Reglas para gestión de parejas
+    match /pairs/{pairId} {
+      // Solo usuarios autenticados pueden leer parejas
+      allow read: if request.auth != null;
+      
+      // Solo Super Usuarios pueden crear parejas
+      allow create: if request.auth != null && 
+                      exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid)) &&
+                      get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'su';
+      
+      // Solo Super Usuarios pueden eliminar parejas
+      allow delete: if request.auth != null && 
+                      exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid)) &&
+                      get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'su';
+      
+      // Solo Super Usuarios pueden actualizar parejas
+      allow update: if request.auth != null && 
+                      exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid)) &&
+                      get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'su';
+      
+      // Permitir listado de parejas para usuarios autenticados
+      allow list: if request.auth != null;
+    }
+    
     // Reglas para gestión de partidos
     match /matches/{matchId} {
       // Solo usuarios autenticados pueden leer partidos
@@ -50,12 +74,12 @@ service cloud.firestore {
                       exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid)) &&
                       get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'su';
       
-      // Miembros aprobados pueden unirse/abandonar partidos (solo campo players)
+      // Miembros aprobados pueden unirse/abandonar partidos (solo campo pairs)
       allow update: if request.auth != null && 
                       exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid)) &&
                       get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'member' &&
                       get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.status == 'approved' &&
-                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['players', 'updatedAt']);
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['pairs', 'updatedAt']);
       
       // Permitir listado de partidos para usuarios autenticados
       allow list: if request.auth != null;

@@ -21,7 +21,9 @@ const db = firebase.firestore();
 const COLLECTIONS = {
     USERS: 'users',
     USER_PROFILES: 'userProfiles',
-    MATCHES: 'matches'
+    MATCHES: 'matches',
+    PAIRS: 'pairs',
+    STATISTICS: 'statistics'
 };
 
 // Estados de usuario
@@ -50,6 +52,26 @@ const MATCH_TYPES = {
     FRIENDLY: 'friendly',       // Amistoso
     TOURNAMENT: 'tournament',   // Torneo
     LEAGUE: 'league'           // Liga
+};
+
+// Estados de parejas
+const PAIR_STATUS = {
+    ACTIVE: 'active',           // Pareja activa
+    INACTIVE: 'inactive',       // Pareja disuelta
+    TEMPORARY: 'temporary'      // Pareja temporal para un partido
+};
+
+// Estados de resultados
+const RESULT_STATUS = {
+    PENDING: 'pending',         // Sin resultado registrado
+    COMPLETED: 'completed'      // Resultado registrado
+};
+
+// Formato de sets para pádel (primer set a ganar por pareja)
+const PADEL_SETS = {
+    SET_1: 'set1',
+    SET_2: 'set2', 
+    SET_3: 'set3'  // Super tie-break si es necesario
 };
 
 // Función para mostrar notificaciones

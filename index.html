@@ -14,6 +14,7 @@
             <nav class="nav" id="mainNav" style="display: none;">
                 <button class="nav-btn active" data-tab="administracion">Administración</button>
                 <button class="nav-btn" data-tab="torneo">Torneo</button>
+                <button class="nav-btn" data-tab="estadisticas">Estadísticas</button>
                 <div class="user-info">
                     <span id="userEmail"></span>
                     <span id="userRole" class="user-role"></span>
@@ -93,6 +94,56 @@
                         </div>
                     </div>
 
+                    <!-- Gestión de Parejas -->
+                    <div class="admin-section">
+                        <h3>Gestión de Parejas</h3>
+                        
+                        <!-- Formulario para crear pareja -->
+                        <div class="pair-form-container">
+                            <button id="togglePairForm" class="btn btn-primary">+ Crear Nueva Pareja</button>
+                            
+                            <div id="pairForm" class="pair-form" style="display: none;">
+                                <h4>Crear Nueva Pareja</h4>
+                                <form id="createPairForm">
+                                    <div class="form-row">
+                                        <div class="input-group">
+                                            <label for="pairName">Nombre de la Pareja:</label>
+                                            <input type="text" id="pairName" placeholder="Los Campeones" required>
+                                        </div>
+                                        <div class="input-group">
+                                            <label for="pairStatus">Estado:</label>
+                                            <select id="pairStatus" required>
+                                                <option value="active">Activa</option>
+                                                <option value="temporary">Temporal</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="input-group">
+                                        <label>Seleccionar 2 Jugadores:</label>
+                                        <div id="playerSelectionForPair" class="player-selection">
+                                            <!-- Los miembros aprobados se cargarán aquí -->
+                                        </div>
+                                        <p class="form-help">Selecciona exactamente 2 jugadores para formar la pareja.</p>
+                                    </div>
+                                    
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-success">Crear Pareja</button>
+                                        <button type="button" id="cancelPairForm" class="btn btn-secondary">Cancelar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- Lista de parejas existentes -->
+                        <div class="pairs-list">
+                            <h4>Parejas Registradas</h4>
+                            <div id="pairsList" class="pairs-container">
+                                <!-- Las parejas se cargarán aquí dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Gestión de Partidos -->
                     <div class="admin-section">
                         <h3>Gestión de Partidos</h3>
@@ -125,11 +176,9 @@
                                             <input type="text" id="matchLocation" placeholder="Cancha 1, Club XYZ" required>
                                         </div>
                                         <div class="input-group">
-                                            <label for="maxPlayers">Máx. Jugadores:</label>
-                                            <select id="maxPlayers" required>
-                                                <option value="4">4 (2 vs 2)</option>
-                                                <option value="6">6 (3 vs 3)</option>
-                                                <option value="8">8 (4 vs 4)</option>
+                                            <label for="maxPairs">Número de Parejas:</label>
+                                            <select id="maxPairs" required>
+                                                <option value="2" selected>2 Parejas (Partido estándar)</option>
                                             </select>
                                         </div>
                                     </div>
@@ -140,10 +189,11 @@
                                     </div>
                                     
                                     <div class="input-group">
-                                        <label>Seleccionar Jugadores:</label>
-                                        <div id="playerSelection" class="player-selection">
-                                            <!-- Los miembros aprobados se cargarán aquí -->
+                                        <label>Seleccionar Parejas:</label>
+                                        <div id="playerSelection" class="pair-selection">
+                                            <!-- Las parejas activas se cargarán aquí -->
                                         </div>
+                                        <p class="form-help">Para pádel, selecciona exactamente 2 parejas (4 jugadores total).</p>
                                     </div>
                                     
                                     <div class="form-actions">
@@ -220,6 +270,44 @@
                 </div>
             </div>
         </section>
+
+        <!-- Pestaña Estadísticas -->
+        <section id="estadisticasTab" class="tab-content">
+            <div class="container">
+                <h2>Estadísticas del Torneo</h2>
+                
+                <!-- Estadísticas para miembros aprobados y SU -->
+                <div id="statisticsContent" class="statistics-content">
+                    
+                    <!-- Estadísticas Generales -->
+                    <div class="stats-section">
+                        <h3>Estadísticas Generales</h3>
+                        <div class="stats-grid" id="generalStats">
+                            <!-- Estadísticas generales se cargarán aquí -->
+                        </div>
+                    </div>
+                    
+                    <!-- Ranking de Parejas -->
+                    <div class="stats-section">
+                        <h3>Ranking de Parejas</h3>
+                        <div class="pair-stats-table" id="pairRanking">
+                            <!-- Tabla de ranking se cargará aquí -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button id="refreshStats" class="btn btn-primary">Actualizar Estadísticas</button>
+                        <button id="exportStats" class="btn btn-secondary">Exportar Datos</button>
+                    </div>
+                </div>
+                
+                <!-- Mensaje para usuarios sin acceso -->
+                <div id="statisticsAccessDenied" class="tournament-info" style="display: none;">
+                    <p style="color: #e53e3e;">Necesitas ser un miembro aprobado para ver las estadísticas.</p>
+                    <p style="color: #718096;">Tu solicitud está siendo revisada por un administrador.</p>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Loading spinner -->
@@ -237,8 +325,11 @@
     <script src="js/firebase-config.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/admin.js"></script>
+    <script src="js/pairs.js"></script>
     <script src="js/matches.js"></script>
     <script src="js/tournament.js"></script>
+    <script src="js/statistics.js"></script>
+    <script src="js/statistics-ui.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
