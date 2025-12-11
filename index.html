@@ -78,14 +78,89 @@
                 
                 <!-- Solo visible para Super Usuarios -->
                 <div id="adminPanel" class="admin-panel" style="display: none;">
-                    <h3>Solicitudes de Miembros Pendientes</h3>
-                    <div id="pendingUsers" class="pending-users">
-                        <!-- Las solicitudes se cargarán aquí dinámicamente -->
+                    <!-- Gestión de Usuarios -->
+                    <div class="admin-section">
+                        <h3>Gestión de Usuarios</h3>
+                        
+                        <h4>Solicitudes de Miembros Pendientes</h4>
+                        <div id="pendingUsers" class="pending-users">
+                            <!-- Las solicitudes se cargarán aquí dinámicamente -->
+                        </div>
+                        
+                        <h4>Miembros Autorizados</h4>
+                        <div id="approvedUsers" class="approved-users">
+                            <!-- Los miembros aprobados se mostrarán aquí -->
+                        </div>
                     </div>
-                    
-                    <h3>Miembros Autorizados</h3>
-                    <div id="approvedUsers" class="approved-users">
-                        <!-- Los miembros aprobados se mostrarán aquí -->
+
+                    <!-- Gestión de Partidos -->
+                    <div class="admin-section">
+                        <h3>Gestión de Partidos</h3>
+                        
+                        <!-- Formulario para crear partido -->
+                        <div class="match-form-container">
+                            <button id="toggleMatchForm" class="btn btn-primary">+ Crear Nuevo Partido</button>
+                            
+                            <div id="matchForm" class="match-form" style="display: none;">
+                                <h4>Crear Nuevo Partido</h4>
+                                <form id="createMatchForm">
+                                    <div class="form-row">
+                                        <div class="input-group">
+                                            <label for="matchDate">Fecha:</label>
+                                            <input type="datetime-local" id="matchDate" required>
+                                        </div>
+                                        <div class="input-group">
+                                            <label for="matchType">Tipo:</label>
+                                            <select id="matchType" required>
+                                                <option value="friendly">Amistoso</option>
+                                                <option value="tournament">Torneo</option>
+                                                <option value="league">Liga</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        <div class="input-group">
+                                            <label for="matchLocation">Ubicación:</label>
+                                            <input type="text" id="matchLocation" placeholder="Cancha 1, Club XYZ" required>
+                                        </div>
+                                        <div class="input-group">
+                                            <label for="maxPlayers">Máx. Jugadores:</label>
+                                            <select id="maxPlayers" required>
+                                                <option value="4">4 (2 vs 2)</option>
+                                                <option value="6">6 (3 vs 3)</option>
+                                                <option value="8">8 (4 vs 4)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="input-group">
+                                        <label for="matchDescription">Descripción:</label>
+                                        <textarea id="matchDescription" placeholder="Detalles del partido..." rows="3"></textarea>
+                                    </div>
+                                    
+                                    <div class="input-group">
+                                        <label>Seleccionar Jugadores:</label>
+                                        <div id="playerSelection" class="player-selection">
+                                            <!-- Los miembros aprobados se cargarán aquí -->
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-success">Crear Partido</button>
+                                        <button type="button" id="cancelMatchForm" class="btn btn-secondary">Cancelar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- Lista de partidos existentes -->
+                        <div class="matches-list">
+                            <h4>Partidos Programados</h4>
+                            <div id="matchesList" class="matches-container">
+                                <!-- Los partidos se cargarán aquí dinámicamente -->
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -109,9 +184,39 @@
         <section id="torneoTab" class="tab-content">
             <div class="container">
                 <h2>Torneo de Pádel</h2>
-                <div class="tournament-info">
-                    <p>Información del torneo aparecerá aquí...</p>
-                    <p><em>Esta sección se desarrollará en la siguiente fase.</em></p>
+                
+                <!-- Vista para miembros aprobados y SU -->
+                <div id="tournamentContent" class="tournament-content">
+                    
+                    <!-- Próximos Partidos -->
+                    <div class="tournament-section">
+                        <h3>Próximos Partidos</h3>
+                        <div id="upcomingMatches" class="matches-grid">
+                            <!-- Partidos próximos se cargarán aquí -->
+                        </div>
+                    </div>
+                    
+                    <!-- Partidos en Curso -->
+                    <div class="tournament-section">
+                        <h3>Partidos en Curso</h3>
+                        <div id="liveMatches" class="matches-grid">
+                            <!-- Partidos en curso se cargarán aquí -->
+                        </div>
+                    </div>
+                    
+                    <!-- Historial de Partidos -->
+                    <div class="tournament-section">
+                        <h3>Historial de Partidos</h3>
+                        <div id="matchHistory" class="matches-grid">
+                            <!-- Historial se cargará aquí -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mensaje para usuarios sin acceso -->
+                <div id="tournamentAccessDenied" class="tournament-info" style="display: none;">
+                    <p style="color: #e53e3e;">Necesitas ser un miembro aprobado para acceder al torneo.</p>
+                    <p style="color: #718096;">Tu solicitud está siendo revisada por un administrador.</p>
                 </div>
             </div>
         </section>
@@ -132,6 +237,8 @@
     <script src="js/firebase-config.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/admin.js"></script>
+    <script src="js/matches.js"></script>
+    <script src="js/tournament.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

@@ -20,7 +20,8 @@ const db = firebase.firestore();
 // Colecciones de Firestore
 const COLLECTIONS = {
     USERS: 'users',
-    USER_PROFILES: 'userProfiles'
+    USER_PROFILES: 'userProfiles',
+    MATCHES: 'matches'
 };
 
 // Estados de usuario
@@ -34,6 +35,21 @@ const USER_STATUS = {
 const USER_ROLES = {
     SU: 'su',           // Super Usuario
     MEMBER: 'member'    // Miembro
+};
+
+// Estados de partidos
+const MATCH_STATUS = {
+    SCHEDULED: 'scheduled',     // Programado
+    IN_PROGRESS: 'in_progress', // En curso
+    COMPLETED: 'completed',     // Completado
+    CANCELLED: 'cancelled'      // Cancelado
+};
+
+// Tipos de partido
+const MATCH_TYPES = {
+    FRIENDLY: 'friendly',       // Amistoso
+    TOURNAMENT: 'tournament',   // Torneo
+    LEAGUE: 'league'           // Liga
 };
 
 // Función para mostrar notificaciones

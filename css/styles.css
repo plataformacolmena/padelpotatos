@@ -256,11 +256,27 @@ body {
     margin-bottom: 2rem;
 }
 
+.admin-section {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-section:last-child {
+    border-bottom: none;
+}
+
 .admin-panel h3 {
     color: #4a5568;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #667eea;
     padding-bottom: 0.5rem;
+}
+
+.admin-panel h4 {
+    color: #2d3748;
+    margin: 1.5rem 0 1rem 0;
+    font-size: 1.1rem;
 }
 
 .pending-users,
@@ -326,12 +342,16 @@ body {
 }
 
 /* Información del torneo */
-.tournament-info {
+.tournament-info,
+.tournament-content {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.tournament-info {
     text-align: center;
 }
 
@@ -343,6 +363,303 @@ body {
 
 .tournament-info em {
     color: #718096;
+}
+
+.tournament-section {
+    margin-bottom: 2rem;
+}
+
+.tournament-section h3 {
+    color: #4a5568;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 0.5rem;
+}
+
+/* Gestión de partidos */
+.match-form-container {
+    margin-bottom: 2rem;
+}
+
+.match-form {
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.match-form h4 {
+    color: #2d3748;
+    margin-bottom: 1rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-row .input-group {
+    flex: 1;
+}
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #4a5568;
+    font-weight: bold;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.input-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+.btn-secondary {
+    background: #718096;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #4a5568;
+}
+
+/* Selección de jugadores */
+.player-selection {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 5px;
+    padding: 1rem;
+    background: white;
+}
+
+.player-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+}
+
+.player-item:hover {
+    background: #f7fafc;
+}
+
+.player-item input[type="checkbox"] {
+    margin-right: 0.5rem;
+    width: auto;
+}
+
+.player-item label {
+    flex: 1;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Lista de partidos */
+.matches-container,
+.matches-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.match-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.match-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.match-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.match-type {
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.match-type.friendly {
+    background: #c6f6d5;
+    color: #22543d;
+}
+
+.match-type.tournament {
+    background: #fed7d7;
+    color: #742a2a;
+}
+
+.match-type.league {
+    background: #bee3f8;
+    color: #2a4365;
+}
+
+.match-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.match-status.scheduled {
+    background: #faf089;
+    color: #744210;
+}
+
+.match-status.in_progress {
+    background: #68d391;
+    color: #22543d;
+}
+
+.match-status.completed {
+    background: #cbd5e0;
+    color: #4a5568;
+}
+
+.match-status.cancelled {
+    background: #fed7d7;
+    color: #742a2a;
+}
+
+.match-info {
+    margin-bottom: 1rem;
+}
+
+.match-info h4 {
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+}
+
+.match-details p {
+    color: #718096;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.match-players {
+    margin-top: 1rem;
+}
+
+.match-players h5 {
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.players-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.player-tag {
+    background: #edf2f7;
+    color: #4a5568;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.match-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+/* Estilos adicionales para partidos */
+.user-match {
+    border: 2px solid #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.user-match-indicator {
+    background: #667eea;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.player-tag.current-user {
+    background: #667eea;
+    color: white;
+    font-weight: bold;
+}
+
+/* Responsive para gestión de partidos */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .matches-container,
+    .matches-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .match-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
 }
 
 /* Loading spinner */

@@ -63,20 +63,45 @@ class TournamentApp {
         if (authManager && authManager.isSuperUser()) {
             adminManager.loadPendingUsers();
             adminManager.loadApprovedUsers();
+            // Cargar partidos en el panel de administración
+            matchManager.loadMatches();
         }
     }
 
     // Manejar pestaña del torneo
     handleTournamentTab() {
-        // Aquí se implementará la lógica del torneo en futuras versiones
-        console.log('Pestaña del torneo activada');
-        
-        // Por ahora solo verificar permisos
-        if (authManager && !authManager.isApprovedMember() && !authManager.isSuperUser()) {
-            document.querySelector('#torneoTab .tournament-info').innerHTML = `
-                <p style="color: #e53e3e;">Necesitas ser un miembro aprobado para acceder al torneo.</p>
-                <p style="color: #718096;">Tu solicitud está siendo revisada por un administrador.</p>
-            `;
+        // Cargar datos del torneo para miembros aprobados y SU
+        if (authManager && (authManager.isApprovedMember() || authManager.isSuperUser())) {
+            tournamentViewer.loadTournamentData();
+        } else if (authManager && authManager.userProfile) {
+            // Mostrar mensaje apropiado según el estado
+            const accessDenied = document.getElementById('tournamentAccessDenied');
+            const content = document.getElementById('tournamentContent');
+            
+            if (accessDenied && content) {
+                content.style.display = 'none';
+                accessDenied.style.display = 'block';
+                
+                // Personalizar mensaje según estado
+                switch (authManager.userProfile.status) {
+                    case USER_STATUS.PENDING:
+                        accessDenied.innerHTML = `
+                            <p style="color: #d69e2e;">Tu solicitud está siendo revisada por un administrador.</p>
+                            <p style="color: #718096;">Una vez aprobada, tendrás acceso completo al torneo.</p>
+                        `;
+                        break;
+                    case USER_STATUS.DENIED:
+                        accessDenied.innerHTML = `
+                            <p style="color: #e53e3e;">Tu solicitud de acceso ha sido denegada.</p>
+                            <p style="color: #718096;">Contacta al administrador para más información.</p>
+                        `;
+                        break;
+                    default:
+                        accessDenied.innerHTML = `
+                            <p style="color: #e53e3e;">No tienes permisos para acceder al torneo.</p>
+                        `;
+                }
+            }
         }
     }
 

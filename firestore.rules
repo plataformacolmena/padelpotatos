@@ -30,6 +30,37 @@ service cloud.firestore {
                     get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'su';
     }
     
+    // Reglas para gestión de partidos
+    match /matches/{matchId} {
+      // Solo usuarios autenticados pueden leer partidos
+      allow read: if request.auth != null;
+      
+      // Solo Super Usuarios pueden crear partidos
+      allow create: if request.auth != null && 
+                      exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid)) &&
+                      get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'su';
+      
+      // Solo Super Usuarios pueden eliminar partidos
+      allow delete: if request.auth != null && 
+                      exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid)) &&
+                      get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'su';
+      
+      // Super Usuarios pueden actualizar cualquier campo de los partidos
+      allow update: if request.auth != null && 
+                      exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid)) &&
+                      get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'su';
+      
+      // Miembros aprobados pueden unirse/abandonar partidos (solo campo players)
+      allow update: if request.auth != null && 
+                      exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid)) &&
+                      get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'member' &&
+                      get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.status == 'approved' &&
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['players', 'updatedAt']);
+      
+      // Permitir listado de partidos para usuarios autenticados
+      allow list: if request.auth != null;
+    }
+    
     // Reglas futuras para otras colecciones del torneo
     // match /tournaments/{tournamentId} {
     //   // Reglas para torneos

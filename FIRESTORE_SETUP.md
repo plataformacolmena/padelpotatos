@@ -18,6 +18,10 @@ service cloud.firestore {
       allow read, write: if request.auth != null;
     }
     
+    match /matches/{matchId} {
+      allow read, write: if request.auth != null;
+    }
+    
     // Denegar todo lo demás
     match /{document=**} {
       allow read, write: if false;
