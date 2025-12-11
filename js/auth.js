@@ -30,23 +30,51 @@ class AuthManager {
             
             if (userDoc.exists) {
                 this.userProfile = userDoc.data();
+                console.log('Perfil de usuario cargado:', this.userProfile);
             } else {
                 // Si es un nuevo usuario, crear perfil inicial
+                console.log('Creando nuevo perfil de usuario...');
                 this.userProfile = {
                     email: this.currentUser.email,
-                    name: '',
+                    name: this.currentUser.displayName || '',
                     role: USER_ROLES.MEMBER,
                     status: USER_STATUS.PENDING,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
                 
+                // Intentar crear el perfil
                 await db.collection(COLLECTIONS.USER_PROFILES).doc(this.currentUser.uid).set(this.userProfile);
+                console.log('Perfil de usuario creado exitosamente');
             }
             
             this.updateUserInterface();
         } catch (error) {
             console.error('Error cargando perfil de usuario:', error);
-            showNotification('Error al cargar el perfil de usuario', 'error');
+            
+            // Si es un error de permisos y el usuario no tiene perfil, crear uno básico localmente
+            if (error.code === 'permission-denied') {
+                console.log('Creando perfil temporal debido a permisos...');
+                this.userProfile = {
+                    email: this.currentUser.email,
+                    name: this.currentUser.displayName || 'Usuario',
+                    role: USER_ROLES.MEMBER,
+                    status: USER_STATUS.PENDING,
+                    createdAt: new Date()
+                };
+                
+                // Intentar crear el perfil nuevamente
+                try {
+                    await db.collection(COLLECTIONS.USER_PROFILES).doc(this.currentUser.uid).set(this.userProfile);
+                    console.log('Perfil creado después de error de permisos');
+                } catch (createError) {
+                    console.error('Error al crear perfil:', createError);
+                    showNotification('Error de configuración. Contacta al administrador.', 'error');
+                }
+                
+                this.updateUserInterface();
+            } else {
+                showNotification('Error al cargar el perfil de usuario', 'error');
+            }
         }
     }
 

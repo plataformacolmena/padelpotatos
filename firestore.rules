@@ -5,30 +5,29 @@ service cloud.firestore {
     // Reglas para perfiles de usuario
     match /userProfiles/{userId} {
       
-      // Los usuarios pueden leer su propio perfil
+      // Los usuarios autenticados pueden leer su propio perfil
       allow read: if request.auth != null && request.auth.uid == userId;
       
       // Los usuarios pueden crear su propio perfil (solo en registro)
-      allow create: if request.auth != null && 
-                      request.auth.uid == userId &&
-                      request.resource.data.role == 'member' &&
-                      request.resource.data.status == 'pending';
+      allow create: if request.auth != null && request.auth.uid == userId;
       
       // Los usuarios pueden actualizar ciertos campos de su propio perfil
-      allow update: if request.auth != null && 
-                      request.auth.uid == userId &&
-                      // Solo pueden cambiar el nombre, no el rol ni status
-                      request.resource.data.diff(resource.data).affectedKeys()
-                        .hasOnly(['name']);
+      allow update: if request.auth != null && request.auth.uid == userId;
       
       // Super Usuarios pueden leer todos los perfiles
       allow read: if request.auth != null && 
+                    exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid)) &&
                     get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'su';
       
-      // Solo Super Usuarios pueden actualizar estados y roles de otros usuarios
+      // Super Usuarios pueden actualizar cualquier perfil
       allow update: if request.auth != null && 
-                      get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'su' &&
-                      request.auth.uid != userId; // No pueden modificarse a sí mismos
+                      exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid)) &&
+                      get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'su';
+      
+      // Permitir listado para Super Usuarios
+      allow list: if request.auth != null && 
+                    exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid)) &&
+                    get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'su';
     }
     
     // Reglas futuras para otras colecciones del torneo
