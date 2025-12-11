@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Reglas para perfiles de usuario
+    match /userProfiles/{userId} {
+      
+      // Los usuarios pueden leer su propio perfil
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // Los usuarios pueden crear su propio perfil (solo en registro)
+      allow create: if request.auth != null && 
+                      request.auth.uid == userId &&
+                      request.resource.data.role == 'member' &&
+                      request.resource.data.status == 'pending';
+      
+      // Los usuarios pueden actualizar ciertos campos de su propio perfil
+      allow update: if request.auth != null && 
+                      request.auth.uid == userId &&
+                      // Solo pueden cambiar el nombre, no el rol ni status
+                      request.resource.data.diff(resource.data).affectedKeys()
+                        .hasOnly(['name']);
+      
+      // Super Usuarios pueden leer todos los perfiles
+      allow read: if request.auth != null && 
+                    get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'su';
+      
+      // Solo Super Usuarios pueden actualizar estados y roles de otros usuarios
+      allow update: if request.auth != null && 
+                      get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'su' &&
+                      request.auth.uid != userId; // No pueden modificarse a sí mismos
+    }
+    
+    // Reglas futuras para otras colecciones del torneo
+    // match /tournaments/{tournamentId} {
+    //   // Reglas para torneos
+    // }
+    
+    // match /matches/{matchId} {
+    //   // Reglas para partidos
+    // }
+    
+    // Denegar todo lo demás por defecto
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+// Reglas para Firebase Authentication
+// (Se configuran en Authentication > Settings en Firebase Console)
+
+// Reglas para Firebase Storage (si se usa en el futuro)
+// service firebase.storage {
+//   match /b/{bucket}/o {
+//     match /{allPaths=**} {
+//       allow read, write: if request.auth != null;
+//     }
+//   }
+// }

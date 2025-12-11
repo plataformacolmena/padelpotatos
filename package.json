@@ -1,0 +1,25 @@
+{
+  "name": "torneo-padel-2025",
+  "version": "1.0.0",
+  "description": "Aplicación web para gestión de torneos de pádel con Firebase",
+  "main": "index.html",
+  "scripts": {
+    "serve": "python3 -m http.server 8000",
+    "serve-win": "python -m http.server 8000"
+  },
+  "keywords": [
+    "padel",
+    "torneo",
+    "firebase",
+    "spa",
+    "javascript"
+  ],
+  "author": "Torneo Pádel 2025",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": ""
+  }
+}

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torneo de Pádel 2025</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Header con navegación -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">Torneo Pádel 2025</h1>
+            <nav class="nav" id="mainNav" style="display: none;">
+                <button class="nav-btn active" data-tab="administracion">Administración</button>
+                <button class="nav-btn" data-tab="torneo">Torneo</button>
+                <div class="user-info">
+                    <span id="userEmail"></span>
+                    <span id="userRole" class="user-role"></span>
+                    <button id="logoutBtn" class="logout-btn">Cerrar Sesión</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Pantalla de login -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <h2>Iniciar Sesión</h2>
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Contraseña:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+            </form>
+            <div class="login-options">
+                <p>¿No tienes cuenta? <a href="#" id="showRegister">Registrarse</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de registro -->
+    <div id="registerScreen" class="register-screen" style="display: none;">
+        <div class="register-container">
+            <h2>Registro de Usuario</h2>
+            <form id="registerForm">
+                <div class="input-group">
+                    <label for="regEmail">Email:</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                <div class="input-group">
+                    <label for="regPassword">Contraseña:</label>
+                    <input type="password" id="regPassword" required minlength="6">
+                </div>
+                <div class="input-group">
+                    <label for="regName">Nombre Completo:</label>
+                    <input type="text" id="regName" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Registrarse como Miembro</button>
+            </form>
+            <div class="register-options">
+                <p><a href="#" id="showLogin">Volver al Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <main id="mainContent" class="main-content" style="display: none;">
+        <!-- Pestaña Administración -->
+        <section id="administracionTab" class="tab-content active">
+            <div class="container">
+                <h2>Panel de Administración</h2>
+                
+                <!-- Solo visible para Super Usuarios -->
+                <div id="adminPanel" class="admin-panel" style="display: none;">
+                    <h3>Solicitudes de Miembros Pendientes</h3>
+                    <div id="pendingUsers" class="pending-users">
+                        <!-- Las solicitudes se cargarán aquí dinámicamente -->
+                    </div>
+                    
+                    <h3>Miembros Autorizados</h3>
+                    <div id="approvedUsers" class="approved-users">
+                        <!-- Los miembros aprobados se mostrarán aquí -->
+                    </div>
+                </div>
+                
+                <!-- Mensaje para miembros regulares -->
+                <div id="memberPanel" class="member-panel" style="display: none;">
+                    <div class="status-message">
+                        <h3>Estado de tu Membresía</h3>
+                        <p id="memberStatus">Tu solicitud está siendo revisada por un administrador.</p>
+                    </div>
+                </div>
+                
+                <!-- Mensaje de acceso denegado -->
+                <div id="accessDenied" class="access-denied" style="display: none;">
+                    <h3>Acceso Denegado</h3>
+                    <p>Tu solicitud de membresía ha sido rechazada. Contacta al administrador para más información.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pestaña Torneo -->
+        <section id="torneoTab" class="tab-content">
+            <div class="container">
+                <h2>Torneo de Pádel</h2>
+                <div class="tournament-info">
+                    <p>Información del torneo aparecerá aquí...</p>
+                    <p><em>Esta sección se desarrollará en la siguiente fase.</em></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading spinner -->
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Cargando...</p>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Scripts de la aplicación -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
